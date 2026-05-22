@@ -6,6 +6,8 @@ import "./App.css";
 function App() {
   const [quests, setQuests] = useState([]);
 
+  const notConcludedQuests = quests.filter((quest) => quest.status !== "concluido");
+
   function saveAddQuest(title) {
     let auxQuests = [...quests];
     let id = 0;
@@ -66,16 +68,21 @@ function App() {
     setQuests(auxQuests);
   }
 
-  function deleteQuest(id) {
-    const updatedQuests = quests.filter((quest) => quest.id !== id);
-    setQuests(updatedQuests);
-    localStorage.setItem("quests", JSON.stringify(updatedQuests));
+  function saveDeleteQuest(quest) {
+    let auxQuests = [...quests];
+
+    const filterAuxQuests = auxQuests.filter(
+      (auxQuest) => auxQuest.id !== quest.id
+    );
+
+    localStorage.setItem("quests", JSON.stringify(filterAuxQuests));
+    setQuests(filterAuxQuests);
   }
 
   useEffect(() => {
-  const saved = localStorage.getItem("quests");
-  if (saved) setQuests(JSON.parse(saved));
-}, []);
+    const saved = localStorage.getItem("quests");
+    if (saved) setQuests(JSON.parse(saved));
+  }, []);
 
   return (
     <div className="flex h-screen justify-center items-center">
@@ -85,10 +92,10 @@ function App() {
         </h1>
         <AddQuest saveAddQuest={saveAddQuest} />
         <QuestList
-          quests={quests}
+          quests={notConcludedQuests}
           saveEditQuest={saveEditQuest}
           saveConcludedQuest={saveConcludedQuest}
-          deleteQuest={deleteQuest}
+          saveDeleteQuest={saveDeleteQuest}
         />
       </div>
     </div>
